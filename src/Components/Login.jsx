@@ -1,71 +1,66 @@
-import { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../providers/AuthProvider";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Login = () => {
-    const {signInUser, signInWithGoogle} = useContext(AuthContext);
-    const navigate = useNavigate();   // ai navigate er moddhe kono route dila oi route a nia jai. conditionaly navigate use kora hoi.
 
+    const {loginUser, signInWithGoogle, setUser, signInGithub, user} = useContext(AuthContext);
 
-    const handleSubmit = (e)=> {
-        e.preventDefault();
+    // pathname pawer jonn
+    const navigate = useNavigate();
+    const location = useLocation();
+    console.log(location);   //Output: {pathname: '/login', search: '', hash: '', state: '/about', key: 'hrpp4jwq'}
+
+    useEffect( ()=>{
+        if(user){
+            navigate(location.state)
+        }
+    } ,[user])
+    const handleSignInGoogle = ()=> {
+        signInWithGoogle()
+        .then(res => {
+            // setUser(res.user)
+        })
+        .catch(err => console.log(err))
+    }
+    const handleSignInGithub = ()=> {
+        signInGithub()
+        .then(result => {
+            // setUser(result.user)
+            console.log(result.user)
+        })
+        .catch(err => console.log(err))
+    }
+
+    const handleLogin = e=> {
+        e.preventDefault()
         const email = e.target.email.value;
         const password = e.target.password.value;
-        console.log(signInUser);
+        console.log( email, password);
 
-        signInUser(email, password)
-        .then(result => {
-            console.log(result);
-            e.target.reset();    // onSubmit a event asle,, oi event.target.reset() method k call korle input field clear hobe.
-            navigate("/");    // jokhon thikthak vabe login hobe, tokhon home page a nia jabe.
-        })
-        .catch(err => console.error(err))
-
+        loginUser(email, password)
+        .then(result => console.log("Successfully login", result))
+        .catch(err => console.log( err))
     }
 
-
-    // handle google signin --->> 
-    const handleSignIn = ()=> {
-        signInWithGoogle()
-        .then(result => {
-            console.log(result)
-        })
-        .catch( err => console.log(err))
-    }
     return (
-        <div className="hero min-h-screen bg-base-200">
-            <div className="hero-content flex-col ">
-                <div className="text-center lg:text-left">
-                    <h1 className="text-5xl font-bold">Login now!</h1>
+        <div className='w-[40%] border-2 mx-auto p-2 rounded-lg '>
+            <form onSubmit={handleLogin} className='w-[50%] mx-auto '> 
+          
+                <div>
+                    <p>Email</p>
+                    <input name='email' type="email" placeholder="Email" className="input input-bordered w-full max-w-xs" />
                 </div>
-                <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-                    <form onSubmit={handleSubmit} className="card-body">
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Email</span>
-                            </label>
-                            <input type="email" name="email" placeholder="email" className="input input-bordered" required />
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Password</span>
-                            </label>
-                            <input type="password" name="password" placeholder="password" className="input input-bordered" required />
-                            <label className="label">
-                                <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
-                            </label>
-                        </div>
-                        <div className="form-control mt-6">
-                            <button className="btn btn-primary">Login</button>
-                        </div>
-                    </form>
-                    <p>You new Auth Moha Milon? Please <Link to="/register" className="font-bold text-blue-800" >Register</Link> </p>
+                <div>
+                    <p>Password</p>
+                    <input name='password' type="password" placeholder="Password" className="input input-bordered w-full max-w-xs" />
                 </div>
+             
+                <button className="btn btn-accent w-full mt-5">Login</button>
 
-                {/* handleSignIn button    . aikhane onClick a  signInWithGoogle function k call kore dibona. karon .then and .catch er maddhoem error k dhorte hobe.*/}
-                <button onClick={handleSignIn} >SignIn Google</button> 
-
-            </div>
+            </form>
+            <button onClick={handleSignInGoogle} className="btn btn-accent w-full mt-5">Sign In Google</button>
+            <button onClick={handleSignInGithub} className="btn btn-accent w-full mt-5">Sign In Github</button>
         </div>
     );
 };

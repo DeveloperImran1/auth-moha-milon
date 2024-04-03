@@ -1,65 +1,86 @@
-import { useContext } from "react";
-import { Link } from "react-router-dom";
-import { AuthContext } from "../providers/AuthProvider";
+import React, { useContext, useState } from 'react';
+import { AuthContext } from '../providers/AuthProvider';
 
 const Register = () => {
-    // useContext
-    // const authInfo = useContext(AuthContext);     // Output: {user: null, createUser: ƒ} amader dorkar createUser function k. so distucture kore niasi.
-    const {createUser} = useContext(AuthContext);
-    // console.log(createUser);  // aita akta function. jeita perameter a email and password nei.
+
+    const {registerUser, setUser} = useContext(AuthContext);
+
+    const [error, setError] = useState("")
 
 
-    const handleRegister = (e)=> {
-        e.preventDefault();
+    const handleSubmit = e=> {
+        e.preventDefault()
         const name = e.target.name.value;
+        const photo = e.target.photo.value;
         const email = e.target.email.value;
         const password = e.target.password.value;
-        console.log(name, email, password);
+        const confirmPassword = e.target.confirmPassword.value;
+        console.log(name, photo, email, password, confirmPassword);
 
+        // validation email
+        // if(!/@gmail\.com$/.test(email)){
+        //     return setError("email last charecter mustbe follow this syntax @gmail.com")
+        // }
+        // // validation password
+        // if(password.length < 6){
+        //     return setError("Password mustbe below 6 charecter")
+        // }
+        // if(password != confirmPassword){
+        //     return setError("password and confirm password mustbe same hote hobe")
+        // }
+      
+        // if(!/[@#$%&]/.test(password)){
+        //     return setError("Password a akta special charecter hote hobe.")
+        // }
 
-        // create user in firebase
-        createUser(email, password)
-        .then(result => {
-            console.log(result)
+        // if(!/\d{2,}$/.test(password)){
+        //     return setError("Password er last 2 charecter number hote hobe.")
+        // }
+
+        setError("")
+
+        registerUser(email, password)
+        .then(res => {
+            // setUser(res.user)
         })
-        .catch(err => console.error(err))
+        .catch(err => {
+            // setError(err.message)
+        })
     }
+
+
+
     return (
-        <div className="hero min-h-screen bg-base-200">
-            <div className="hero-content flex-col ">
-                <div className="text-center lg:text-left">
-                    <h1 className="text-5xl font-bold">Register now!</h1>
+        <div className='w-[40%] border-2 mx-auto p-2 rounded-lg '>
+            <form onSubmit={handleSubmit} className='w-[50%] mx-auto '> 
+                <div>
+                    <p>Name</p>
+                    <input name='name' type="text" placeholder="Name" className="input input-bordered w-full max-w-xs" />
                 </div>
-                <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-                    <form onSubmit={handleRegister} className="card-body">
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Name</span>
-                            </label>
-                            <input type="text" name="name" placeholder="Your Name" className="input input-bordered" required />
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Email</span>
-                            </label>
-                            <input type="email" name="email" placeholder="email" className="input input-bordered" required />
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Password</span>
-                            </label>
-                            <input type="password" name="password" placeholder="password" className="input input-bordered" required />
-                            <label className="label">
-                                <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
-                            </label>
-                        </div>
-                        <div className="form-control mt-6">
-                            <button className="btn btn-primary">Register</button>
-                        </div>
-                    </form>
-                    <p>Already have an Acount? Please <Link to="/login" className="font-bold text-blue-800" >Login</Link> </p>
+                <div>
+                    <p>Photo</p>
+                    <input name='photo' type="text" placeholder="Photo" className="input input-bordered w-full max-w-xs" />
                 </div>
-            </div>
+                <div>
+                    <p>Email</p>
+                    <input name='email' type="email" placeholder="Email" className="input input-bordered w-full max-w-xs" />
+                </div>
+                <div>
+                    <p>Password</p>
+                    <input name='password' type="password" placeholder="Password" className="input input-bordered w-full max-w-xs" />
+                </div>
+                <div>
+                    <p>Confirm Password</p>
+                    <input name='confirmPassword' type="password" placeholder="Confirm Password" className="input input-bordered w-full max-w-xs" />
+                </div>
+                <span className='text-red-600'>
+                    {
+                        error && <span>{error}</span>
+                    }
+                </span>
+                <button className="btn btn-accent w-full mt-5">Register</button>
+
+            </form>
         </div>
     );
 };
